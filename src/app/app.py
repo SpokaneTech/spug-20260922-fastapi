@@ -1,10 +1,12 @@
 from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.security import HTTPBearer
 
 app = FastAPI(title="Task API", description="A small in-memory API for learning FastAPI.")
+bearer_auth = HTTPBearer()
 
 
 # A dictionary is our temporary in-memory data store. Restarting the server resets it.
@@ -47,12 +49,12 @@ async def welcome() -> dict[str, str]:
     return {"message": "Welcome to the Task API"}
 
 
-@app.get("/tasks")
+@app.get("/tasks", dependencies=[Depends(bearer_auth)])
 def get_tasks() -> list[dict[str, Any]]:
     return list(tasks.values())
 
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", dependencies=[Depends(bearer_auth)])
 def get_task(task_id: int):
     task = tasks.get(task_id)
     if task is None:
@@ -60,7 +62,7 @@ def get_task(task_id: int):
     return task
 
 
-@app.post("/tasks", status_code=201)
+@app.post("/tasks", status_code=201, dependencies=[Depends(bearer_auth)])
 async def create_task(request: Request):
     global next_task_id
 
@@ -83,7 +85,7 @@ async def create_task(request: Request):
     return task
 
 
-@app.patch("/tasks/{task_id}")
+@app.patch("/tasks/{task_id}", dependencies=[Depends(bearer_auth)])
 async def update_task(task_id: int, request: Request):
     task = tasks.get(task_id)
     if task is None:
@@ -106,7 +108,7 @@ async def update_task(task_id: int, request: Request):
     return task
 
 
-@app.delete("/tasks/{task_id}", status_code=204)
+@app.delete("/tasks/{task_id}", status_code=204, dependencies=[Depends(bearer_auth)])
 def delete_task(task_id: int) -> Response:
     if task_id not in tasks:
         return error("Task not found", 404)
