@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+]
+description = "Your first Python API; FastAPI edition"
+readme = "README.md"
+keywords = ["fastapi", "API", "SPUG", "meetup", "example"]
+license = { file = "LICENSE" }
+name = "spug-fastapi"
+version = "0.1.0"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+task-api = "app.app:main"
+
+[project.optional-dependencies]
+dev = [
+    "bandit",
+    "ruff",
+    "setuptools",
+    "types-python-dateutil",
+    "types-requests",
+    "typing-extensions",
+
+]
+
+
+[tool.bandit]
+exclude_dirs = [
+    "tests", "venv"
+    ]
+skips = ["B311"]
+
+
+[tool.ruff]
+exclude = [
+    "tests",
+    "venv"
+]
+line-length = 120
+
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["app"]
